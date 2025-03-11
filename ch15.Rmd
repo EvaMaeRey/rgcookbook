@@ -28,7 +28,7 @@ The recipes in this chapter will often use packages from the *tidyverse*. For a 
 
 > **Note**
 >
-> The `%>%` symbol, also known as the pipe operator, is used extensively in this chapter. If you are not familiar with it, see Recipe \@ref(RECIPE-R-BASICS-PIPE).
+> The `|>` symbol, also known as the pipe operator, is used extensively in this chapter. If you are not familiar with it, see Recipe \@ref(RECIPE-R-BASICS-PIPE).
 
 Most of the tidyverse functions used in this chapter are from the dplyr package, and in this chapter, I'll assume that dplyr is already loaded. You can load it with either `library(tidyverse)` as shown above, or, if you want to keep things more streamlined, you can load dplyr directly:
 
@@ -169,7 +169,7 @@ If you assign a single value to the new column, the entire column will be filled
 ```{r}
 library(dplyr)
 
-ToothGrowth %>%
+ToothGrowth |>
   mutate(newcol = NA)
 ```
 
@@ -179,7 +179,7 @@ You can also assign a vector to the new column:
 # Since ToothGrowth has 60 rows, we must create a new vector that has 60 rows
 vec <- rep(c(1, 2), 30)
 
-ToothGrowth %>%
+ToothGrowth |>
   mutate(newcol = vec)
 ```
 
@@ -218,7 +218,7 @@ Use `select()` from dplyr and specify the columns you want to drop by using `-` 
 
 ```{r eval=FALSE}
 # Remove the len column
-ToothGrowth %>%
+ToothGrowth |>
   select(-len)
 ```
 
@@ -228,11 +228,11 @@ You can list multiple columns that you want to drop at the same time, or convers
 
 ```{r eval=FALSE}
 # Remove both len and supp from ToothGrowth
-ToothGrowth %>%
+ToothGrowth |>
   select(-len, -supp)
 
 # This keeps just dose, which has the same effect for this data set
-ToothGrowth %>%
+ToothGrowth |>
   select(dose)
 ```
 
@@ -261,7 +261,7 @@ You want to rename the columns in a data frame.
 Use `rename()` from dplyr. This returns a new data frame:
 
 ```{r eval=FALSE}
-ToothGrowth %>%
+ToothGrowth |>
   rename(length = len)
 ```
 
@@ -270,7 +270,7 @@ ToothGrowth %>%
 You can rename multiple columns within the same call to `rename()`:
 
 ```{r}
-ToothGrowth %>%
+ToothGrowth |>
   rename(
     length = len,
     supplement_type = supp
@@ -309,7 +309,7 @@ You want to change the order of columns in a data frame.
 Use the `select()` from dplyr.
 
 ```{r}
-ToothGrowth %>%
+ToothGrowth |>
   select(dose, len, supp)
 ```
 
@@ -320,7 +320,7 @@ The new data frame will contain the columns you specified in `select()`, in the 
 If you are only reordering a few variables and want to keep the rest of the variables in order, you can use `everything()` as a placeholder:
 
 ```{r}
-ToothGrowth %>%
+ToothGrowth |>
   select(dose, everything())
 ```
 
@@ -366,7 +366,7 @@ You want to get a subset of a data frame.
 
 ### Solution
 
-Use `filter()` to get the rows, and `select()` to get the columns you want. These operations can be chained together using the `%>%` operator. These functions return a new data frame, so if you want to change the original variable, you'll need to save the new result over it.
+Use `filter()` to get the rows, and `select()` to get the columns you want. These operations can be chained together using the `|>` operator. These functions return a new data frame, so if you want to change the original variable, you'll need to save the new result over it.
 
 We'll use the `climate` data set for the examples here:
 
@@ -378,22 +378,22 @@ climate
 Let's that say that only want to keep rows where `Source` is `"Berkeley"` and where the year is inclusive of and between 1900 and 2000. You can do so with the `filter()` function:
 
 ```{r eval=FALSE}
-climate %>%
+climate |>
   filter(Source == "Berkeley" & Year >= 1900 & Year <= 2000)
 ```
 
 If you want only the `Year` and `Anomaly10y` columns, use `select()`, as we did in \@ref(RECIPE-DATAPREP-DELETE-COL):
 
 ```{r}
-climate %>%
+climate |>
   select(Year, Anomaly10y)
 ```
 
-These operations can be chained together using the `%>%` operator:
+These operations can be chained together using the `|>` operator:
 
 ```{r}
-climate %>%
-  filter(Source == "Berkeley" & Year >= 1900 & Year <= 2000) %>%
+climate |>
+  filter(Source == "Berkeley" & Year >= 1900 & Year <= 2000) |>
   select(Year, Anomaly10y)
 ```
 
@@ -902,7 +902,7 @@ This will convert `heightIn` to centimeters and store it in a new column, `heigh
 
 ```{r}
 library(dplyr)
-heightweight %>%
+heightweight |>
   mutate(heightCm = heightIn * 2.54)
 ```
 
@@ -913,7 +913,7 @@ This returns a new data frame, so if you want to replace the original variable, 
 You can use `mutate()` to transform multiple columns at once:
 
 ```{r}
-heightweight %>%
+heightweight |>
   mutate(
     heightCm = heightIn * 2.54,
     weightKg = weightLb / 2.204
@@ -923,14 +923,14 @@ heightweight %>%
 It is also possible to calculate a new column based on multiple columns:
 
 ```{r eval=FALSE}
-heightweight %>%
+heightweight |>
   mutate(bmi = weightKg / (heightCm / 100)^2)
 ```
 
 With `mutate()`, the columns are added sequentially. That means that we can reference a newly-created column when calculating a new column:
 
 ```{r}
-heightweight %>%
+heightweight |>
   mutate(
     heightCm = heightIn * 2.54,
     weightKg = weightLb / 2.204,
@@ -964,8 +964,8 @@ Use `group_by()` from the dplyr package to specify the grouping variable, and th
 library(MASS)  # Load MASS for the cabbages data set
 library(dplyr)
 
-cabbages %>%
-  group_by(Cult) %>%
+cabbages |>
+  group_by(Cult) |>
   mutate(DevWt = HeadWt - mean(HeadWt))
 ```
 
@@ -988,8 +988,8 @@ mutate(cabbages, DevWt = HeadWt - mean(HeadWt))
 You'll often want to do separate operations like this for each group, where the groups are specified by one or more grouping variables. Suppose, for example, we want to normalize the data within each group by finding the deviation of each case from the mean *within the group*, where the groups are specified by `Cult`. In these cases, we can use `group_by()` and `mutate()` together:
 
 ```{r}
-cb <- cabbages %>%
-  group_by(Cult) %>%
+cb <- cabbages |>
+  group_by(Cult) |>
   mutate(DevWt = HeadWt - mean(HeadWt))
 ```
 
@@ -1010,8 +1010,8 @@ ggplot(cb, aes(x = Cult, y = DevWt)) +
 You can also group the data frame on multiple variables and perform operations on multiple variables. The following code groups the data by `Cult` and `Date`, forming a group for each distinct combination of the two variables. After forming these groups, the code will calculate the deviation of `HeadWt` and `VitC` from the mean of each group:
 
 ```{r}
-cabbages %>%
-  group_by(Cult, Date) %>%
+cabbages |>
+  group_by(Cult, Date) |>
   mutate(
     DevWt = HeadWt - mean(HeadWt),
     DevVitC = VitC - mean(VitC)
@@ -1038,8 +1038,8 @@ Use `group_by()` and `summarise()` from the dplyr package, and specify the opera
 library(MASS)  # Load MASS for the cabbages data set
 library(dplyr)
 
-cabbages %>%
-  group_by(Cult, Date) %>%
+cabbages |>
+  group_by(Cult, Date) |>
   summarise(
     Weight = mean(HeadWt),
     VitC = mean(VitC)
@@ -1076,12 +1076,12 @@ The command first groups the data frame `cabbages` based on the value of `Cult`.
 
 You can imagine that the `cabbages` data is split up into two separate data frames, then `summarise()` is called on each data frame (returning a one-row data frame for each), and then those results are combined together into a final data frame. This is actually how things worked in dplyr's predecessor, plyr, with the `ddply()` function.
 
-The syntax of the previous code used a temporary variable to store results. That's a little verbose, so instead, we can use `%>%`, also known as the pipe operator, to chain the function calls together. The pipe operator simply takes what's on its left and substitutes it as the first argument of the function call on the right. The following two lines of code are equivalent:
+The syntax of the previous code used a temporary variable to store results. That's a little verbose, so instead, we can use `|>`, also known as the pipe operator, to chain the function calls together. The pipe operator simply takes what's on its left and substitutes it as the first argument of the function call on the right. The following two lines of code are equivalent:
 
 ```{r eval=FALSE}
 group_by(cabbages, Cult)
 # The pipe operator moves `cabbages` to the first argument position of group_by()
-cabbages %>% group_by(Cult)
+cabbages |> group_by(Cult)
 ```
 
 The reason it's called a pipe operator is that it lets you connect function calls together in sequence to form a pipeline of operations. Another common term for this is a different metaphor: *chaining*.
@@ -1095,16 +1095,16 @@ summarise(group_by(cabbages, Cult), Weight = mean(HeadWt))
 Using a temporary variable, as we did earlier, makes it more readable, but a more elegant solution is to use the pipe operator:
 
 ```{r eval=FALSE}
-cabbages %>%
-  group_by(Cult) %>%
+cabbages |>
+  group_by(Cult) |>
   summarise(Weight = mean(HeadWt))
 ```
 
 Back to summarizing data. Summarizing the data frame by grouping using more variables (or columns) is simple: just give it the names of the additional variables. It's also possible to get more than one summary value by specifying more calculated columns. Here we'll summarize each `Cult` and `Date` group, getting the average of `HeadWt` and `VitC`:
 
 ```{r}
-cabbages %>%
-  group_by(Cult, Date) %>%
+cabbages |>
+  group_by(Cult, Date) |>
   summarise(
     Weight = mean(HeadWt),
     Vitc = mean(VitC)
@@ -1118,8 +1118,8 @@ cabbages %>%
 It's possible to do more than take the mean. You may, for example, want to compute the standard deviation and count of each group. To get the standard deviation, use `sd()`, and to get a count of rows in each group, use `n()`:
 
 ```{r}
-cabbages %>%
-  group_by(Cult, Date) %>%
+cabbages |>
+  group_by(Cult, Date) |>
   summarise(
     Weight = mean(HeadWt),
     sd = sd(HeadWt),
@@ -1140,8 +1140,8 @@ One potential pitfall is that `NA`s in the data will lead to `NA`s in the output
 c1 <- cabbages # Make a copy
 c1$HeadWt[c(1, 20, 45)] <- NA # Set some values to NA
 
-c1 %>%
-  group_by(Cult) %>%
+c1 |>
+  group_by(Cult) |>
   summarise(
     Weight = mean(HeadWt),
     sd = sd(HeadWt),
@@ -1152,8 +1152,8 @@ c1 %>%
 The problem is that `mean()` and `sd()` simply return `NA` if any of the input values are `NA.` Fortunately, these functions have an option to deal with this very issue: setting `na.rm=TRUE` will tell them to ignore the `NA`s.
 
 ```{r}
-c1 %>%
-  group_by(Cult) %>%
+c1 |>
+  group_by(Cult) |>
   summarise(
     Weight = mean(HeadWt, na.rm = TRUE),
     sd = sd(HeadWt, na.rm = TRUE),
@@ -1169,8 +1169,8 @@ If there are any empty combinations of the grouping variables, they will not app
 ```{r FIG-DATAPREP-SUMMARIZE-MISSING-COMBO-1, eval=FALSE}
 # Copy cabbages and remove all rows with both c52 and d21
 c2 <- filter(cabbages, !( Cult == "c52" & Date == "d21" ))
-c2a <- c2 %>%
-  group_by(Cult, Date) %>%
+c2a <- c2 |>
+  group_by(Cult, Date) |>
   summarise(Weight = mean(HeadWt))
 
 ggplot(c2a, aes(x = Date, fill = Cult, y = Weight)) +
@@ -1182,8 +1182,8 @@ To fill in the missing combination (Figure \@ref(fig:FIG-DATAPREP-SUMMARIZE-MISS
 
 ```{r FIG-DATAPREP-SUMMARIZE-MISSING-COMBO-2, eval=FALSE}
 library(tidyr)
-c2b <- c2a %>%
-  ungroup() %>%
+c2b <- c2a |>
+  ungroup() |>
   complete(Cult, Date)
 
 ggplot(c2b, aes(x = Date, fill = Cult, y = Weight)) +
@@ -1220,8 +1220,8 @@ Getting the standard error of the mean involves two steps: first get the standar
 library(MASS)  # Load MASS for the cabbages data set
 library(dplyr)
 
-ca <- cabbages %>%
-  group_by(Cult, Date) %>%
+ca <- cabbages |>
+  group_by(Cult, Date) |>
   summarise(
     Weight = mean(HeadWt),
     sd = sd(HeadWt),
@@ -1282,8 +1282,8 @@ summarySE <- function(data = NULL, measurevar, groupvars = NULL, na.rm = FALSE,
   groupvars  <- rlang::syms(groupvars)
   measurevar <- rlang::sym(measurevar)
 
-  datac <- data %>%
-    dplyr::group_by(!!!groupvars) %>%
+  datac <- data |>
+    dplyr::group_by(!!!groupvars) |>
     dplyr::summarise(
       N             = length2(!!measurevar, na.rm = na.rm),
       sd            = sd     (!!measurevar, na.rm = na.rm),
@@ -1293,8 +1293,8 @@ summarySE <- function(data = NULL, measurevar, groupvars = NULL, na.rm = FALSE,
       # Calculate t-statistic for confidence interval:
       # e.g., if conf.interval is .95, use .975 (above/below), and use df=N-1
       ci            = se * qt(conf.interval/2 + .5, N - 1)
-    ) %>%
-    dplyr::ungroup() %>%
+    ) |>
+    dplyr::ungroup() |>
     # Rearrange the columns so that sd, se, ci are last
     dplyr::select(seq_len(ncol(.) - 4), ncol(.) - 2, sd, se, ci)
 
@@ -1370,7 +1370,7 @@ For example, in the `drunk` data set, suppose we want to convert it to long form
 drunk
 
 # Try gather() with just 0-29 and 30-39
-drunk %>%
+drunk |>
   gather(age, count, "0-29", "30-39")
 ```
 
@@ -1379,8 +1379,8 @@ That doesn't look right! We told `gather()` that `0-29` and `30-39` were the val
 ```{r}
 library(dplyr)  # For the select() function
 
-drunk %>%
-  select(sex, "0-29", "30-39") %>%
+drunk |>
+  select(sex, "0-29", "30-39") |>
   gather(age, count, "0-29", "30-39")
 ```
 
@@ -1446,12 +1446,12 @@ The way to do this is to combine the `length` and `survival` columns together an
 
 ```{r}
 # Create a new column, length_survival, from length and survival.
-plum %>%
+plum |>
   unite(length_survival, length, survival)
 
 # Now pass it to spread() and use length_survival as a key
-plum %>%
-  unite(length_survival, length, survival) %>%
+plum |>
+  unite(length_survival, length, survival) |>
   spread(length_survival, count)
 ```
 
